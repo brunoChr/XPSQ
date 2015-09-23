@@ -6,6 +6,7 @@
 
 import socket
 
+
 class XPS:
     # Defines
     MAX_NB_SOCKETS = 100
