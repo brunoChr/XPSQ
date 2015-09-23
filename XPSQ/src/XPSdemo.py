@@ -28,7 +28,7 @@ def displayErrorAndClose (socketId, errorCode, APIName):
 # Instantiate the class
 myxps = XPS_Q8_drivers.XPS()
 # Connect to the XPS
-socketId = myxps.TCP_ConnectToServer('192.168.33.235', 5001, 20)
+socketId = myxps.TCP_ConnectToServer('192.168.254.99', 5001, 20)
 # Check connection passed
 if (socketId == -1):
     print 'Connection to XPS failed, check IP & Port'
