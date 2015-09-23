@@ -4,8 +4,9 @@ Created on 23 sept. 2015
 @author: b.christol
 '''
 # --------- Python program: XPS controller demonstration -------- #
-import XPS_Q8_drivers
 import sys
+
+import XPS_Q8_drivers
 
 
 # Display error function: simplify error print out and closes socket
@@ -28,7 +29,9 @@ def displayErrorAndClose (socketId, errorCode, APIName):
 # Instantiate the class
 myxps = XPS_Q8_drivers.XPS()
 # Connect to the XPS
+
 socketId = myxps.TCP_ConnectToServer('192.168.254.254', 5001, 20)
+
 # Check connection passed
 if (socketId == -1):
     print 'Connection to XPS failed, check IP & Port'
