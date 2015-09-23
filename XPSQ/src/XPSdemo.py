@@ -28,11 +28,11 @@ def displayErrorAndClose (socketId, errorCode, APIName):
 # Instantiate the class
 myxps = XPS_Q8_drivers.XPS()
 # Connect to the XPS
-socketId = myxps.TCP_ConnectToServer('192.168.254.99', 5001, 20)
+socketId = myxps.TCP_ConnectToServer('192.168.254.254', 5001, 20)
 # Check connection passed
 if (socketId == -1):
     print 'Connection to XPS failed, check IP & Port'
-    sys.exit ()
+    sys.exit()
 
 # Add here your personal codes, below for example:
 # Define the positioner
@@ -42,12 +42,12 @@ positioner = group + '.X'
 [errorCode, returnString] = myxps.GroupKill(socketId, group)
 if (errorCode != 0):
     displayErrorAndClose (socketId, errorCode, 'GroupKill')
-    sys.exit ()
+    sys.exit()
 # Initialize the group
 [errorCode, returnString] = myxps.GroupInitialize(socketId, group)
 if (errorCode != 0):
     displayErrorAndClose (socketId, errorCode, 'GroupInitialize')
-    sys.exit ()
+    sys.exit()
 # Home search
 [errorCode, returnString] = myxps.GroupHomeSearch(socketId, group)
 if (errorCode != 0):
@@ -59,24 +59,24 @@ for index in range(10):
     [errorCode, returnString] = myxps.GroupMoveAbsolute(socketId, positioner, [20.0])
 if (errorCode != 0):
     displayErrorAndClose (socketId, errorCode, 'GroupMoveAbsolute')
-    sys.exit ()
+    sys.exit()
 # Get current position
 [errorCode, currentPosition] = myxps.GroupPositionCurrentGet(socketId, positioner, 1)
 if (errorCode != 0):
     displayErrorAndClose (socketId, errorCode, 'GroupPositionCurrentGet')
-    sys.exit ()
+    sys.exit()
 else:
     print 'Positioner ' + positioner + ' is in position ' + str(currentPosition)
 # Backward
 [errorCode, returnString] = myxps.GroupMoveAbsolute(socketId, positioner, [-20.0])
 if (errorCode != 0):
     displayErrorAndClose (socketId, errorCode, 'GroupMoveAbsolute')
-    sys.exit ()
+    sys.exit()
 # Get current position
 [errorCode, currentPosition] = myxps.GroupPositionCurrentGet(socketId, positioner, 1)
 if (errorCode != 0):
     displayErrorAndClose (socketId, errorCode, 'GroupPositionCurrentGet')
-    sys.exit ()
+    sys.exit()
 else:
     print 'Positioner ' + positioner + ' is in position ' + str(currentPosition)
 # Close connection
