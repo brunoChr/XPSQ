@@ -32,6 +32,7 @@ class XPS:
                 ret += XPS.__sockets[socketId].recv(1024)
         except socket.timeout:
             return [-2, '']
+
         except socket.error:# (errNb, errString):
             print 'Socket error : ' # errString
             return [-2, '']
