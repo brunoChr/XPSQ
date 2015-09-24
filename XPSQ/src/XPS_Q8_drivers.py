@@ -1171,7 +1171,7 @@ class XPS:
     def GroupKill (self, socketId, GroupName):
         if (XPS.__usedSockets[socketId] == 0):
             return
-
+        print GroupName + ' : GroupeName'
         command = 'GroupKill(' + GroupName + ')'
         [error, returnedString] = self.__sendAndReceive(socketId, command)
         return [error, returnedString]

@@ -8,7 +8,7 @@ import sys
 
 import XPS_Q8_drivers
 
-
+#import time
 # Display error function: simplify error print out and closes socket
 def displayErrorAndClose (socketId, errorCode, APIName):
     if (errorCode != -2) and (errorCode != -108):
@@ -39,8 +39,8 @@ if (socketId == -1):
 
 # Add here your personal codes, below for example:
 # Define the positioner
-group = 'XY'
-positioner = group + '.X'
+group = 'S1'
+positioner = group + '.AXE_X'
 # Kill the group
 [errorCode, returnString] = myxps.GroupKill(socketId, group)
 if (errorCode != 0):
@@ -58,30 +58,30 @@ if (errorCode != 0):
     exit
 # Make some moves
 for index in range(10):
-# Forward
+    # Forward
+    [errorCode, returnString] = myxps.GroupMoveAbsolute(socketId, positioner, [40.0])
+    if (errorCode != 0):
+        displayErrorAndClose (socketId, errorCode, 'GroupMoveAbsolute')
+        sys.exit()
+    # Get current position
+    [errorCode, currentPosition] = myxps.GroupPositionCurrentGet(socketId, positioner, 1)
+    if (errorCode != 0):
+        displayErrorAndClose (socketId, errorCode, 'GroupPositionCurrentGet')
+        sys.exit()
+    else:
+        print 'Positioner ' + positioner + ' is in position ' + str(currentPosition)
+    # Backward
     [errorCode, returnString] = myxps.GroupMoveAbsolute(socketId, positioner, [20.0])
-if (errorCode != 0):
-    displayErrorAndClose (socketId, errorCode, 'GroupMoveAbsolute')
-    sys.exit()
-# Get current position
-[errorCode, currentPosition] = myxps.GroupPositionCurrentGet(socketId, positioner, 1)
-if (errorCode != 0):
-    displayErrorAndClose (socketId, errorCode, 'GroupPositionCurrentGet')
-    sys.exit()
-else:
-    print 'Positioner ' + positioner + ' is in position ' + str(currentPosition)
-# Backward
-[errorCode, returnString] = myxps.GroupMoveAbsolute(socketId, positioner, [-20.0])
-if (errorCode != 0):
-    displayErrorAndClose (socketId, errorCode, 'GroupMoveAbsolute')
-    sys.exit()
-# Get current position
-[errorCode, currentPosition] = myxps.GroupPositionCurrentGet(socketId, positioner, 1)
-if (errorCode != 0):
-    displayErrorAndClose (socketId, errorCode, 'GroupPositionCurrentGet')
-    sys.exit()
-else:
-    print 'Positioner ' + positioner + ' is in position ' + str(currentPosition)
+    if (errorCode != 0):
+        displayErrorAndClose (socketId, errorCode, 'GroupMoveAbsolute')
+        sys.exit()
+    # Get current position
+    [errorCode, currentPosition] = myxps.GroupPositionCurrentGet(socketId, positioner, 1)
+    if (errorCode != 0):
+        displayErrorAndClose (socketId, errorCode, 'GroupPositionCurrentGet')
+        sys.exit()
+    else:
+        print 'Positioner ' + positioner + ' is in position ' + str(currentPosition)
 # Close connection
 myxps.TCP_CloseSocket(socketId)
 #----------- End of the demo program ----------#
