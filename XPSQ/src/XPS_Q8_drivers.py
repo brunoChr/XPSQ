@@ -1082,7 +1082,7 @@ class XPS:
 
 
     # GroupJogParametersSet :  Modify Jog parameters on selected group and activate the continuous move
-    def GroupJogParametersSet (self, socketId, GroupName, Velocity, Acceleration):
+    def GroupJogParametersSet (self, socketId, GroupName, Velocity, Acceleration, nbItems):
         if (XPS.__usedSockets[socketId] == 0):
             return
 
@@ -1092,8 +1092,11 @@ class XPS:
                 command += ','
             command += str(Velocity[i]) + ',' + str(Acceleration[i])
         command += ')'
+        
+        print command
 
         [error, returnedString] = self.__sendAndReceive(socketId, command)
+        
         return [error, returnedString]
 
 
