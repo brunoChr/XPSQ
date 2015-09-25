@@ -11,6 +11,7 @@ Upgraded to Python 3
 Modified to add deadzones, reduce noise, and support vibration
 Only req is Pyglet 1.2alpha1 or higher:
 pip install --upgrade http://pyglet.googlecode.com/archive/tip.zip 
+
 """
 
 import ctypes
@@ -20,7 +21,7 @@ from pyglet import event
 import sys
 import time
 #import print
-
+from XPSdemoJOG import *
 
 # structs according to
 # http://msdn.microsoft.com/en-gb/library/windows/desktop/ee417001%28v=vs.85%29.aspx
@@ -351,6 +352,9 @@ def sample_first_joystick():
             right_speed = value
         j.set_vibration(left_speed, right_speed)
   
+    ctrl = DriversXPSQ()
+    
+    
     dicoName = {
         0:"UP", 
         1:"DO", 
@@ -373,7 +377,7 @@ def sample_first_joystick():
         'r_thumb_x':"RX",
         'r_thumb_y':"RY"
     }
-    
+    velo = []
     while True:
         dico = {}
         jog_dico, buttons = j.dispatch_events()
@@ -390,9 +394,21 @@ def sample_first_joystick():
                     if dico.values() != []:
                         print dico.values()
                         print "==================="
+                        if dico.has_key('l_thumb_x'):
+                            velocity = dico['l_thumb_x'][1]
+                            print velocity
+                            velo.append(int(velocity*50))
+                            print velo
+                            ctrl.move_jog(velo)
+                            velo = []
                     else:
+                        ctrl.move_jog_abort()
                         print "STOP"
                         print "==================="
+                else:
+                    ctrl.move_jog_abort()
+                    print "STOP"
+                    print "==================="
                
                         
         time.sleep(.01)
