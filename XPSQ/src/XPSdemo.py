@@ -7,10 +7,9 @@ Created on 23 sept. 2015
 import sys
 
 import XPS_Q8_drivers
-from driver import *
+import time
 
 
-#import time
 # Display error function: simplify error print out and closes socket
 def displayErrorAndClose (socketId, errorCode, APIName):
     if (errorCode != -2) and (errorCode != -108):
@@ -28,9 +27,11 @@ def displayErrorAndClose (socketId, errorCode, APIName):
     return
 
 
+
 # Instantiate the class
 myxps = XPS_Q8_drivers.XPS()
 
+# Connexion TCP parameter
 ip = '192.168.0.201'
 port = 5001
 
@@ -44,10 +45,12 @@ if (socketId == -1):
 else :
     print "Connexion at %s on %d successful, continue ..." % (ip, port)
 
-# Add here your personal codes, below for example:
-# Define the positioner
+
+# Define the group & positioner
 group = 'S1'
 positioner = group + '.AXE_X'
+
+# Step 1 : See programmer guide : joystick workflow
 # Kill the group
 [errorCode, returnString] = myxps.GroupKill(socketId, group)
 if (errorCode != 0):
@@ -56,6 +59,7 @@ if (errorCode != 0):
 else :
     print "GroupKill %s sucessfull" % group
 
+# Step 2
 # Initialize the group
 [errorCode, returnString] = myxps.GroupInitialize(socketId, group)
 if (errorCode != 0):
@@ -63,7 +67,8 @@ if (errorCode != 0):
     sys.exit()
 else :
     print "GroupInitialize %s sucessfull" % group
-    
+
+# Step 3    
 # Home search
 [errorCode, returnString] = myxps.GroupHomeSearch(socketId, group)
 if (errorCode != 0):
@@ -71,7 +76,8 @@ if (errorCode != 0):
     sys.exit()
 else :
     print "GroupHomeSearch %s sucessfull" % group
-        
+
+# Step 4        
 # Enable Jog
 [errorCode, returnString] = myxps.GroupJogModeEnable(socketId, group)
 if (errorCode != 0):
@@ -80,7 +86,7 @@ if (errorCode != 0):
 else :
     print "GroupJogModeEnable %s sucessfull" % group
     
-# Get JOG value
+# Get JOG value for verification
 [errorCode, velocity, acceleration] = myxps.GroupJogParametersGet(socketId, group, 1)
 if (errorCode != 0):
     displayErrorAndClose (socketId, errorCode, 'GroupJogParametersGet')
@@ -90,10 +96,11 @@ else :
     print "Velocity : %d" % velocity
     print "Acceleration : %d" % acceleration
    
-
+# Simulate a modification of value, done by joystick in the future
 velocity = [10]
 acceleration = [5]
 
+# Step 5
 # Set JOG values
 [errorCode, returnString] = myxps.GroupJogParametersSet(socketId, group, velocity, acceleration, 1)
 if (errorCode != 0):
@@ -104,8 +111,8 @@ else :
     print "Velocity : %s" % velocity
     print "Acceleration : %s" % acceleration
      
-     
-# Get JOG value
+      
+# Get JOG value vérification
 [errorCode, velocity, acceleration] = myxps.GroupJogParametersGet(socketId, group, 1)
 if (errorCode != 0):
     displayErrorAndClose (socketId, errorCode, 'GroupJogParametersGet')
@@ -115,8 +122,9 @@ else :
     print "Velocity : %d" % velocity
     print "Acceleration : %d" % acceleration
     
-
-# Get groupe state value
+    
+# Step 6
+# Get groupe state value to check state
 [errorCode, state] = myxps.GroupStatusGet(socketId, group)
 if (errorCode != 0):
     displayErrorAndClose (socketId, errorCode, 'GroupStatusGet')
@@ -124,7 +132,26 @@ if (errorCode != 0):
 else :
     print "GroupStatusGet %s sucessfull" % group
     print "State : %s" % state
-    
+
+
+# rate of refreshing
+refreshRate = 0.5
+
+# Print the position 10x time every 500ms
+for index in range(10): 
+
+    # Get current position of group 
+    [errorCode, position] = myxps.GroupPositionCurrentGet(socketId, group, 1)
+    if (errorCode != 0):
+        displayErrorAndClose (socketId, errorCode, 'GroupPositionCurrentGet')
+        sys.exit()
+    else :
+        print "GroupPositionCurrentGet %s sucessfull" % group    
+        print "GroupPositionCurrentGet %d " % position    
+                    
+    # Wait
+    time.sleep(refreshRate)   
+
     
 #===============================================================================
 # velocity = [0]
@@ -141,7 +168,9 @@ else :
 #     print "Acceleration : %s" % acceleration
 #===============================================================================
 
-# Abort group move
+
+# Step 7    
+# Abort group move, stop motion + deactivate jog
 [errorCode, state] = myxps.GroupMoveAbort(socketId, group)
 if (errorCode != 0):
     displayErrorAndClose (socketId, errorCode, 'GroupMoveAbort')
@@ -149,15 +178,36 @@ if (errorCode != 0):
 else :
     print "GroupMoveAbort %s sucessfull" % group
   
-       
-    
-# Disable Jog : All positionner must be idle (velocity = 0)
-[errorCode, returnString] = myxps.GroupJogModeDisable(socketId, group)
+  
+# Get groupe state code value
+[errorCode, stateCode] = myxps.GroupStatusGet(socketId, group)
 if (errorCode != 0):
-    displayErrorAndClose (socketId, errorCode, 'GroupJogModeDisable')
+    displayErrorAndClose (socketId, errorCode, 'GroupStatusGet')
     sys.exit()
 else :
-    print "GroupJogModeDisable %s sucessfull" % group
+    print "GroupStatusGet %s sucessfull" % group
+    print "State code : %d" % stateCode
+
+
+# Get groupe state string
+[errorCode, stateString] = myxps.GroupStatusStringGet(socketId, stateCode)
+if (errorCode != 0):
+    displayErrorAndClose (socketId, errorCode, 'GroupStatusStringGet')
+    sys.exit()
+else :
+    print "GroupStatusStringGet %s sucessfull" % group
+    print "State string : %s" % stateString    
+    
+
+#===============================================================================
+# # Disable Jog : All positionner must be idle (velocity = 0)
+# [errorCode, returnString] = myxps.GroupJogModeDisable(socketId, group)
+# if (errorCode != 0):
+#     displayErrorAndClose (socketId, errorCode, 'GroupJogModeDisable')
+#     sys.exit()
+# else :
+#     print "GroupJogModeDisable %s sucessfull" % group
+#===============================================================================
     
 
 #===============================================================================
