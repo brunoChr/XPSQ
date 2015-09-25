@@ -379,13 +379,20 @@ def sample_first_joystick():
             for i in range(len(buttons)):
                 if buttons[i] != 0:
                     dico[i] = dicoName[i]
-            if jog_dico != None:
-                for cle in dicoName:
-                    if jog_dico.has_key(cle) and jog_dico[cle] != 0.0:
-                        dico[cle] = dicoName[cle]
-            if dico.values() != []:
-                print dico.values()
-                print "==================="
+            for val in dico.values():
+                if val == 'L1':
+                    if jog_dico != None:
+                        for cle, nval in dicoName.items():
+                            if jog_dico.has_key(cle) and jog_dico[cle] != 0.0:
+                                dico[cle] = dicoName[cle],jog_dico[cle]
+                    if dico.values() != []:
+                        print dico.values()
+                        print "==================="
+                    else:
+                        print "STOP"
+                        print "==================="
+               
+                        
         time.sleep(.01)
 
 if __name__ == "__main__":
