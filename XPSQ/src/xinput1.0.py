@@ -358,6 +358,8 @@ def sample_first_joystick():
         3:"RI",
         4:"ST",
         5:"BA",
+        6:"L3",
+        7:"R3",
         8:"L1",
         9:"R1",
         12:"A",
